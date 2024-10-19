@@ -1,0 +1,27 @@
+stages:
+  - deploy service
+  - health check
+
+deploy service:
+  stage: deploy service
+  script:
+    - docker compose up -d --build
+  allow_failure: false
+  only:
+    refs:
+      - main
+  tags:
+    - mtsgpvm01-runner
+
+health check:
+  stage: health check
+  script:
+    - curl http://localhost:8000
+  needs: [deploy service]
+  when: on_success
+  allow_failure: false
+  only:
+    refs:
+      - main
+  tags:
+    - mtsgpvm01-runner
